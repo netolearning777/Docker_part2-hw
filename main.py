@@ -9,10 +9,10 @@ from typing import Optional
 
 # --- 1. Конфигурация ---
 # Считываем конфигурацию БД из переменных окружения
-db_host = os.environ.get('DB_HOST', '127.0.0.1')
+db_host = os.environ.get('DB_HOST', '172.20.0.10')
 db_user = os.environ.get('DB_USER', 'app')
-db_password = os.environ.get('DB_PASSWORD', 'very_strong')
-db_name = os.environ.get('DB_NAME', 'example')
+db_password = os.environ.get('DB_PASSWORD', 'QwErTy1234')
+db_name = os.environ.get('DB_NAME', 'virtd')
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -28,7 +28,6 @@ async def lifespan(app: FastAPI):
     # Код, который выполнится при остановке приложения
     print("Приложение останавливается.")
 
-
 # Создаем экземпляр FastAPI с использованием lifespan
 app = FastAPI(
     title="Shvirtd Example FastAPI",
@@ -36,7 +35,6 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan
 )
-
 
 # --- 2. Управление соединением с БД ---
 @contextmanager
@@ -53,7 +51,6 @@ def get_db_connection():
     finally:
         if db is not None and db.is_connected():
             db.close()
-
 
 # --- 2.1. Функция создания таблицы ---
 def ensure_table_exists():
@@ -75,7 +72,6 @@ def ensure_table_exists():
     except mysql.connector.Error as err:
         print(f"Ошибка при создании таблицы: {err}")
         return False
-
 
 # --- 3. Зависимость для получения IP ---
 def get_client_ip(x_real_ip: Optional[str] = Header(None)):
@@ -116,7 +112,6 @@ def index(request: Request, ip_address: Optional[str] = Depends(get_client_ip)):
 
     return f'TIME: {current_time}, IP: {ip_display}'
 
-
 # --- 5. Отладочный эндпоинт ---
 @app.get("/debug")
 def debug_headers(request: Request):
@@ -128,7 +123,6 @@ def debug_headers(request: Request):
         "real_ip": request.headers.get('x-real-ip'),
         "forwarded": request.headers.get('forwarded')
     }
-
 
 # --- 6. Эндпоинт для просмотра записей в БД ---
 @app.get("/requests")
@@ -177,7 +171,6 @@ def get_requests():
                 "total_records": len(result),
                 "records": result
             }
-
 
 # --- 7. Запуск приложения ---
 # Для запуска этого файла используется ASGI-сервер, например, uvicorn.
